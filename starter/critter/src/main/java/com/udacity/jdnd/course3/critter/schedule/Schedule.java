@@ -21,7 +21,7 @@ public class Schedule {
     private Long id;
     private LocalDate date;
 
-    @OneToMany
+    @ManyToMany(mappedBy = "schedules")
     private List<Employee> employees;
 
     @OneToMany(mappedBy = "schedule")

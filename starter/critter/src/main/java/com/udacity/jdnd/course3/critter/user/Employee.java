@@ -1,5 +1,6 @@
 package com.udacity.jdnd.course3.critter.user;
 
+import com.udacity.jdnd.course3.critter.schedule.Schedule;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,4 +25,12 @@ public class Employee {
     @ElementCollection
     @Enumerated(EnumType.STRING)
     private Set<DayOfWeek> daysAvailable;
+
+    @ManyToMany()
+    @JoinTable(
+            name = "emplyee_schedule",
+            joinColumns = @JoinColumn(name = "employee_id"),
+            inverseJoinColumns = @JoinColumn(name = "schedule_id")
+    )
+    private Set<Schedule> schedules;
 }
