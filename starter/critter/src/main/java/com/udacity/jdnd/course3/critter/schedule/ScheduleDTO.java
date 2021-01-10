@@ -1,6 +1,6 @@
 package com.udacity.jdnd.course3.critter.schedule;
 
-import com.udacity.jdnd.course3.critter.user.EmployeeSkill;
+import com.udacity.jdnd.course3.critter.user.employee.EmployeeSkill;
 import lombok.Getter;
 import lombok.Setter;
 

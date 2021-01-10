@@ -1,8 +1,8 @@
 package com.udacity.jdnd.course3.critter.schedule;
 
 import com.udacity.jdnd.course3.critter.pet.Pet;
-import com.udacity.jdnd.course3.critter.user.Employee;
-import com.udacity.jdnd.course3.critter.user.EmployeeSkill;
+import com.udacity.jdnd.course3.critter.user.employee.Employee;
+import com.udacity.jdnd.course3.critter.user.employee.EmployeeSkill;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +18,7 @@ import java.util.Set;
 @Table(name = "schedules")
 public class Schedule {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDate date;
 
