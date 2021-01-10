@@ -17,7 +17,7 @@ public class PetController {
         this.petService = petService;
     }
 
-    @PostMapping
+    @PostMapping()
     public PetDTO savePet(@RequestBody PetDTO petDTO) {
         return petService.savePet(petDTO);
     }

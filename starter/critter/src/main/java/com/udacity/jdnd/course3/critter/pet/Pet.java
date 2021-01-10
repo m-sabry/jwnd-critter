@@ -1,7 +1,7 @@
 package com.udacity.jdnd.course3.critter.pet;
 
 import com.udacity.jdnd.course3.critter.schedule.Schedule;
-import com.udacity.jdnd.course3.critter.user.Customer;
+import com.udacity.jdnd.course3.critter.user.customer.Customer;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @Table(name = "pets")
 public class Pet {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private LocalDate birthDate;
