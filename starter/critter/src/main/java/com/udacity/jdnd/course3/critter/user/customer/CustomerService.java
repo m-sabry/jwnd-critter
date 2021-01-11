@@ -1,13 +1,17 @@
 package com.udacity.jdnd.course3.critter.user.customer;
 
+import com.udacity.jdnd.course3.critter.pet.Pet;
 import com.udacity.jdnd.course3.critter.pet.PetRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class CustomerService {
     private CustomerRepository customerRepository;
     private PetRepository petRepository;
@@ -29,13 +33,32 @@ public class CustomerService {
     }
 
     public List<CustomerDTO> getAllCustomers() {
-        return customerRepository.findAll().stream()
-                .map(customer -> modelMapper.map(customer, CustomerDTO.class))
-                .collect(Collectors.toList());
+        List<Customer> customers = customerRepository.findAll();
+        List<CustomerDTO> customerDTOS = new ArrayList<>();
+        for (Customer customer: customers){
+            CustomerDTO customerDTO = modelMapper.map(customer, CustomerDTO.class);
+            customerDTO.setPetIds(extractPetsIds(customer.getPets()));
+            customerDTOS.add(customerDTO);
+        }
+        return customerDTOS;
+    }
+
+    private List<Long> extractPetsIds(List<Pet> pets) {
+        List<Long> petsIds = new ArrayList<>();
+
+        if(pets == null)
+            return null;
+
+        for (Pet pet:pets) {
+            petsIds.add(pet.getId());
+        }
+        return petsIds;
     }
 
     public CustomerDTO getOwnerByPet(long petId) {
-        return modelMapper.map(customerRepository.findByPets(petRepository.getOne(petId)), CustomerDTO.class);
-
+        Customer customer = customerRepository.findByPets(petRepository.getOne(petId));
+        CustomerDTO customerDTO = modelMapper.map(customer, CustomerDTO.class);
+        customerDTO.setPetIds(extractPetsIds(customer.getPets()));
+        return customerDTO;
     }
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -21,4 +22,11 @@ public class Customer {
 
     @OneToMany(mappedBy = "owner")
     private List<Pet> pets;
+
+    public void addPet(Pet pet) {
+        if(pets == null){
+            pets = new ArrayList<>();
+        }
+        pets.add(pet);
+    }
 }
