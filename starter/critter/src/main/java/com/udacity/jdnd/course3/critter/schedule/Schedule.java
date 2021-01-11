@@ -22,13 +22,14 @@ public class Schedule {
     private Long id;
     private LocalDate date;
 
-    @ManyToMany(mappedBy = "schedules")
+
+    @ManyToMany(targetEntity = Employee.class)
     private List<Employee> employees;
 
-    @OneToMany(mappedBy = "schedule")
+    @ManyToMany(targetEntity = Pet.class)
     private List<Pet> pets;
 
-    @Enumerated
     @ElementCollection
-    private Set<EmployeeSkill> activeSkills;
+    @Enumerated(EnumType.STRING)
+    private Set<EmployeeSkill> activities;
 }
