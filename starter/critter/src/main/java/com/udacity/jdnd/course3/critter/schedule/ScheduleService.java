@@ -1,16 +1,17 @@
 package com.udacity.jdnd.course3.critter.schedule;
 
 import com.udacity.jdnd.course3.critter.pet.Pet;
-import com.udacity.jdnd.course3.critter.user.employee.EmployeeRepository;
 import com.udacity.jdnd.course3.critter.pet.PetRepository;
 import com.udacity.jdnd.course3.critter.user.customer.CustomerRepository;
 import com.udacity.jdnd.course3.critter.user.employee.Employee;
+import com.udacity.jdnd.course3.critter.user.employee.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@Transactional
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
@@ -28,45 +29,25 @@ public class ScheduleService {
         this.petRepository = petRepository;
     }
 
-    public List<ScheduleDTO> getScheduleForCustomer(long customerId) {
+    public List<Schedule> getScheduleForCustomer(long customerId) {
         List<Pet> pets = petRepository.findByOwner(customerRepository.getOne(customerId));
-        List<Schedule> schedules = scheduleRepository.findByPetsIn(pets);
-        return getScheduleDTOS(schedules);
+        return scheduleRepository.findByPetsIn(pets);
     }
 
 
-    public List<ScheduleDTO> getScheduleForEmployee(long employeeId) {
-        List<Schedule> schedules = scheduleRepository.findAllByEmployeesId(employeeId);
-        return getScheduleDTOS(schedules);
+    public List<Schedule> getScheduleForEmployee(long employeeId) {
+        return scheduleRepository.findAllByEmployeesId(employeeId);
     }
 
-    public List<ScheduleDTO> getScheduleForPet(long petId) {
-        List<Schedule> schedules = scheduleRepository.findAllByPetsId(petId);
-        return getScheduleDTOS(schedules);
+    public List<Schedule> getScheduleForPet(long petId) {
+        return scheduleRepository.findAllByPetsId(petId);
     }
 
-    private List<ScheduleDTO> getScheduleDTOS(List<Schedule> schedules) {
-        List<ScheduleDTO> scheduleDTOS = new ArrayList<>();
-        for (Schedule schedule : schedules) {
-            ScheduleDTO scheduleDTO = new ScheduleDTO();
-            scheduleDTO.setId(schedule.getId());
-            scheduleDTO.setActivities(schedule.getActivities());
-            scheduleDTO.setDate(schedule.getDate());
-            scheduleDTO.setEmployeeIds(extractEmployeesIds(schedule.getEmployees()));
-            scheduleDTO.setPetIds(extractPetsIds(schedule.getPets()));
-
-            scheduleDTOS.add(scheduleDTO);
-        }
-
-        return scheduleDTOS;
+    public List<Schedule> getAllSchedules() {
+        return scheduleRepository.findAll();
     }
 
-    public List<ScheduleDTO> getAllSchedules() {
-        List<Schedule> schedules = scheduleRepository.findAll();
-        return getScheduleDTOS(schedules);
-    }
-
-    public ScheduleDTO createSchedule(ScheduleDTO scheduleDTO) {
+    public Schedule createSchedule(ScheduleDTO scheduleDTO) {
 
         List<Employee> employees = employeeRepository.findAllById(scheduleDTO.getEmployeeIds());
         List<Pet> pets = petRepository.findAllById(scheduleDTO.getPetIds());
@@ -77,31 +58,7 @@ public class ScheduleService {
         schedule.setPets(pets);
         schedule.setEmployees(employees);
 
-        Schedule created = scheduleRepository.save(schedule);
-
-        ScheduleDTO createdScheduleDTO = new ScheduleDTO();
-        createdScheduleDTO.setId(created.getId());
-        createdScheduleDTO.setActivities(created.getActivities());
-        createdScheduleDTO.setDate(created.getDate());
-        createdScheduleDTO.setEmployeeIds(extractEmployeesIds(created.getEmployees()));
-        createdScheduleDTO.setPetIds(extractPetsIds(created.getPets()));
-
-        return createdScheduleDTO;
+        return scheduleRepository.save(schedule);
     }
 
-    private List<Long> extractPetsIds(List<Pet> pets) {
-        List ids = new ArrayList();
-        for (Pet pet:pets){
-            ids.add(pet.getId());
-        }
-        return ids;
-    }
-
-    private List<Long> extractEmployeesIds(List<Employee> employees) {
-        List ids = new ArrayList();
-        for (Employee employee: employees){
-            ids.add(employee.getId());
-        }
-        return ids;
-    }
 }

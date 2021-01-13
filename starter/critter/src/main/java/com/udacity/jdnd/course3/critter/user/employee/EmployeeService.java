@@ -1,32 +1,27 @@
 package com.udacity.jdnd.course3.critter.user.employee;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.DayOfWeek;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Service
+@Transactional
 public class EmployeeService {
     private EmployeeRepository employeeRepository;
-    private ModelMapper modelMapper;
 
-    public EmployeeService(EmployeeRepository employeeRepository,
-                           ModelMapper modelMapper) {
+    public EmployeeService(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
-        this.modelMapper = modelMapper;
     }
 
-    public EmployeeDTO saveEmployee(EmployeeDTO employeeDTO) {
-        Employee employee = modelMapper.map(employeeDTO, Employee.class);
-        Employee created = employeeRepository.save(employee);
-        return modelMapper.map(created, EmployeeDTO.class);
+    public Employee saveEmployee(Employee employee) {
+        return employeeRepository.save(employee);
     }
 
-    public EmployeeDTO getEmployee(long employeeId) {
-        return modelMapper.map(employeeRepository.findById(employeeId).get(), EmployeeDTO.class);
+    public Employee getEmployee(long employeeId) {
+        return employeeRepository.findById(employeeId).get();
     }
 
     public void setAvailability(long employeeId, Set<DayOfWeek> daysAvailable) {
@@ -35,22 +30,8 @@ public class EmployeeService {
         employeeRepository.save(employee);
     }
 
-    public List<EmployeeDTO> findEmployeesForService(EmployeeRequestDTO erDTO) {
-        List<Employee> employees = employeeRepository.findDistinctBySkillsInAndDaysAvailableIs(
-                erDTO.getSkills(), erDTO.getDate().getDayOfWeek());
+    public List<Employee> findEmployeesForService(Set<EmployeeSkill> skills, DayOfWeek dayOfWeek) {
+        return employeeRepository.findDistinctBySkillsInAndDaysAvailableIs(skills, dayOfWeek);
 
-        // filter those that don't contain all skills
-        return convertToEmployeeDTO(employees, erDTO.getSkills());
-    }
-
-    private List<EmployeeDTO> convertToEmployeeDTO(List<Employee> employees, Set<EmployeeSkill> skills) {
-        List<EmployeeDTO> dtos = new ArrayList<>();
-        for (Employee employee: employees){
-            if(employee.getSkills().containsAll(skills)) {
-                EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
-                dtos.add(employeeDTO);
-            }
-        }
-        return dtos;
     }
 }
